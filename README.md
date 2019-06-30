@@ -1,2 +1,39 @@
 # python
-python学习文档
+python 爬取 猫眼top100电影图片
+
+#coding=gbk
+import re
+import requests
+def get_moyan(url):
+	header={
+		"User-Agent":"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+		}
+	reponse=requests.get(url,headers=header)
+	if reponse.status_code==200:
+		return reponse.text
+	else:
+		return None
+def get_image_name(reponse_text):
+	re_compile=re.compile('<dd>.*?board-index-\d*">(\d*).*?title="(.*?)".*?<img data-src="(.*?)".*?</dd>',re.S)
+	re_list=re.findall(re_compile,reponse_text)
+	print(re_list)
+	print(len(re_list))
+	with_to_file(re_list)
+def with_to_file(re_list):
+	
+	for arr in re_list:
+		print(arr[0])
+		with open("./图片/"+arr[0]+"_"+arr[1]+".jpg","wb") as f:
+			f.write(url_image(arr[2]))
+def url_image(url):
+	b_image=None
+	b_image=requests.get(url)
+	return b_image.content
+def main():
+	for i in range(10):
+		print(i)
+		reponse_text=get_moyan("https://maoyan.com/board/4?offset="+str(i*10))
+		get_image_name(reponse_text)
+	
+if __name__=='__main__':
+	main()
